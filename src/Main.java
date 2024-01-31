@@ -84,8 +84,12 @@ public class Main {
         List<Interval> sequence = generateIntervals(0, nSize - 1);
 
         // TODO: Call merge on each interval in sequence
-        MergeSort.merge(randomArray, nSize, nThreads);
+        for (Interval interval: sequence)
+            MergeSort.merge(randomArray, interval.getStart(), interval.getEnd());
 
+        //For Checking:
+        for(int x :randomArray)
+            System.out.println(x);
         // Once you get the single-threaded version to work, it's time to 
         // implement the concurrent version. Good luck :)
     }
