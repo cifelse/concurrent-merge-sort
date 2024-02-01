@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
@@ -56,7 +55,7 @@ public class Main {
         shuffle(randomArray, SEED);
 
         // Display Before Array
-        System.out.println("\nBEFORE: " + Arrays.toString(randomArray));
+        // System.out.println("\nBEFORE: " + Arrays.toString(randomArray));
 
         // Start Timer
         long startTime = System.nanoTime();
@@ -67,13 +66,25 @@ public class Main {
         // End Timer
         long endTime = System.nanoTime();
 
-        // Display After Array
-        System.out.println("AFTER: " + Arrays.toString(randomArray));
+        // Check if Array is Sorted
+        System.out.println("\nSORTED: " + isSorted(randomArray));
 
         // Display Time and Results
         System.out.printf("\nTotal Runtime: %d milliseconds.\n", (long) TimeUnit.NANOSECONDS.toMillis(endTime - startTime));
 
-        // Once you get the single-threaded version to work, it's time to 
-        // implement the concurrent version. Good luck :)
+        return;
+    }
+
+    public static boolean isSorted(int[] arr){
+        int temp = arr[0];
+        for (int i = 1; i < arr.length; i++){
+            if(arr[i] < temp){
+                System.out.println("\nVAL 1: " + arr[i] + " VAL 2: " + temp); 
+                System.out.println("Found at Index: " + i + " and Index: " + (i-1)); 
+                return false;
+            }
+            temp = arr[i];
+        }
+        return true;
     }
 }
