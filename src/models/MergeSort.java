@@ -1,7 +1,12 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MergeSort {
     /**
@@ -12,11 +17,45 @@ public class MergeSort {
      * @param nThreads {int} - The number of Threads to be implemented
      */
     public static void merge(int[] array, int start, int end, int nThreads) {
+        
         List<Interval> intervals = generateIntervals(start, end);
+        ExecutorService executor = Executors.newFixedThreadPool(nThreads);
+        List<List<Callable<Void>>> tasks = new ArrayList<>();
+        
+        int diff = intervals.get(0).getDiff();
+        tasks.add(new ArrayList<>());
 
-        for (Interval interval : intervals) {
-            sort(array, interval.getStart(), interval.getEnd());
+        for(Interval i : intervals){
+            int curr_diff = i.getDiff();
+
+            // If new unique difference is found, add another list
+            if (diff != curr_diff){
+                tasks.add(new ArrayList<>());
+                diff = curr_diff;
+            }
+            
+            // Append Task to the last list of tasks
+            tasks.get(tasks.size() - 1).add(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    sort(array, i.getStart(), i.getEnd());
+                    return null;
+                }
+            });
         }
+
+        // Loop Through every list of tasks
+        for(List<Callable<Void>> l : tasks){
+            try {
+                // Execute list of tasks and wait for all tasks to be completed
+                executor.invokeAll(l);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        executor.shutdown();
+        while(!executor.isTerminated()){};
     }
 
     /**
@@ -49,12 +88,14 @@ public class MergeSort {
             frontier.add(new Interval(s, m));
         }
 
-        List<Interval> retval = new ArrayList<>();
-        for(i = frontier.size() - 1; i >= 0; i--) {
-            retval.add(frontier.get(i));
-        }
+        // Sort each interval by the difference of the End and Start indexes
+        Collections.sort(frontier, new Comparator<Interval>(){ 
+            @Override
+            public int compare(Interval o1, Interval o2) {
+                return Integer.compare(o1.getDiff(), o2.getDiff());
+        }});
 
-        return retval;
+        return frontier;
     }
 
     /**
