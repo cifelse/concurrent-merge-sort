@@ -11,8 +11,8 @@ public class MergeSort {
      * @param end - {int} End range: Array Length
      * @param nThreads {int} - The number of Threads to be implemented
      */
-    public static void merge(int[] array, int start, int end, int nThreads) {
-        List<Interval> intervals = generateIntervals(start, end);
+    public static void merge(int[] array, int nThreads) {
+        List<Interval> intervals = generateIntervals(0, array.length - 1);
 
         for (Interval interval : intervals) {
             sort(array, interval.getStart(), interval.getEnd());
