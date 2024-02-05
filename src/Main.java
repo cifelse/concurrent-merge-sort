@@ -1,13 +1,15 @@
-import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
+import models.BetterMergeSort;
 import models.MergeSort;
 
 public class Main {
     // Seed for the Randomizer
     private static final long SEED = 18;
+
+    private static final int SIZE = 8388608;
 
     /**
      * The main function for getting an input from the user
@@ -38,13 +40,27 @@ public class Main {
         }
     }
 
+    public static boolean isSorted(int[] arr){
+        int temp = arr[0];
+        for (int i = 1; i < arr.length; i++){
+            if(arr[i] < temp){
+                System.out.println("\nVAL 1: " + arr[i] + " VAL 2: " + temp);
+                System.out.println("Found at Index: " + i + " and Index: " + (i-1)); 
+                return false;
+            }
+            temp = arr[i];
+        }
+        return true;
+    }
+
     public static void main(String[] args) {
         // Get array size and thread count from user
         Scanner sc = new Scanner(System.in);
 
-        int nSize =  getUserInput(sc, "Enter size of array: ");
+        // int nSize =  getUserInput(sc, "Enter size of array: ");
+        int nSize = SIZE;
 
-        int nThreads = getUserInput(sc, "Enter number of threads: ");
+        int nThreads = getUserInput(sc, "Enter number of THREADS: ");
 
         // Close the Scanner
         sc.close();
@@ -56,24 +72,21 @@ public class Main {
         shuffle(randomArray, SEED);
 
         // Display Before Array
-        System.out.println("\nBEFORE: " + Arrays.toString(randomArray));
+        // System.out.println("\nBEFORE: " + Arrays.toString(randomArray));
 
         // Start Timer
         long startTime = System.nanoTime();
         
         // Call MergeSort
-        MergeSort.merge(randomArray, 0, randomArray.length - 1, nThreads);
+        BetterMergeSort.merge(randomArray, nThreads);
         
         // End Timer
         long endTime = System.nanoTime();
 
-        // Display After Array
-        System.out.println("AFTER: " + Arrays.toString(randomArray));
+        // Check if Sorted
+        System.out.println("Sorting Status: " + isSorted(randomArray));
 
         // Display Time and Results
         System.out.printf("\nTotal Runtime: %d milliseconds.\n", (long) TimeUnit.NANOSECONDS.toMillis(endTime - startTime));
-
-        // Once you get the single-threaded version to work, it's time to 
-        // implement the concurrent version. Good luck :)
     }
 }
