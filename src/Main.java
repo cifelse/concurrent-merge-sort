@@ -74,19 +74,51 @@ public class Main {
         // Display Before Array
         // System.out.println("\nBEFORE: " + Arrays.toString(randomArray));
 
-        // Start Timer
-        long startTime = System.nanoTime();
-        
-        // Call MergeSort
-        BetterMergeSort.merge(randomArray, nThreads);
-        
-        // End Timer
-        long endTime = System.nanoTime();
 
-        // Check if Sorted
-        System.out.println("Sorting Status: " + isSorted(randomArray));
 
-        // Display Time and Results
-        System.out.printf("\nTotal Runtime: %d milliseconds.\n", (long) TimeUnit.NANOSECONDS.toMillis(endTime - startTime));
+        int[] threads = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
+        float ave = 0;
+        long startTime, endTime;
+
+
+        for (int thread : threads){
+
+            // Caching (Run 3 times)
+            for (int i = 0; i < 3; i++) {
+                MergeSort.merge(randomArray.clone(), thread);
+            }
+
+            // Run 5 times
+            for (int i = 0; i < 5; i++){
+                int[] copy = randomArray.clone();
+
+                // Start Timer
+                startTime = System.nanoTime();
+                
+                // Call MergeSort
+                MergeSort.merge(copy, thread);
+                
+                // End Timer
+                endTime = System.nanoTime();
+
+                ave += (long) TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
+
+                // Check if sorted
+                System.out.println("Iteration: " + i + ", Sorted: " + isSorted(copy));
+            }
+            ave /= 5;
+
+            // Display thread count
+            System.out.println("Thread Count: " + thread);
+
+            // Display Time and Results
+            System.out.printf("Average Runtime: %.4f milliseconds.\n\n", ave);
+
+            ave = 0;
+            System.gc();
+        }
+        
+
     }
+
 }
