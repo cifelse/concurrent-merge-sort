@@ -80,12 +80,15 @@ public class Main {
 
         // Run MergeSort
         for (int thread : threads) {
+            // Display Thread Count
+            System.out.println("Running at Thread Count: " + thread);
+
             // Caching (Run 3 times)
             for (int i = 0; i < 3; i++) {
                 BetterMergeSort.merge(randomArray.clone(), thread);
             }
 
-            // Run 5 times
+            // Get the Average of 5 runs
             for (int i = 0; i < 5; i++) {
                 int[] copy = randomArray.clone();
 
@@ -101,15 +104,12 @@ public class Main {
                 ave += (long) TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
 
                 // Check if sorted
-                System.out.println("Iteration: " + i + ", Sorted: " + isSorted(copy));
+                System.out.println("Iteration: " + (i + 1) + ", Sorted: " + isSorted(copy));
             }
             ave /= 5;
 
-            // Display Thread Count
-            System.out.println("Thread Count: " + thread);
-
             // Display Time and Results
-            System.out.printf("Average Runtime: %.4f milliseconds.\n\n", ave);
+            System.out.printf("Average Runtime: %d milliseconds.\n\n", (int) ave);
 
             // Set Average to 0 again
             ave = 0;
