@@ -1,12 +1,7 @@
 package models;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class MergeSort {
     /**
@@ -16,46 +11,12 @@ public class MergeSort {
      * @param end - {int} End range: Array Length
      * @param nThreads {int} - The number of Threads to be implemented
      */
-    public static void merge(int[] array, int start, int end, int nThreads) {
-        
-        List<Interval> intervals = generateIntervals(start, end);
-        ExecutorService executor = Executors.newFixedThreadPool(nThreads);
-        List<List<Callable<Void>>> tasks = new ArrayList<>();
-        
-        int diff = intervals.get(0).getDiff();
-        tasks.add(new ArrayList<>());
+    public static void merge(int[] array, int nThreads) {
+        List<Interval> intervals = generateIntervals(0, array.length - 1);
 
-        for(Interval i : intervals){
-            int curr_diff = i.getDiff();
-
-            // If new unique difference is found, add another list
-            if (diff != curr_diff){
-                tasks.add(new ArrayList<>());
-                diff = curr_diff;
-            }
-            
-            // Append Task to the last list of tasks
-            tasks.get(tasks.size() - 1).add(new Callable<Void>() {
-                @Override
-                public Void call() throws Exception {
-                    sort(array, i.getStart(), i.getEnd());
-                    return null;
-                }
-            });
+        for (Interval interval : intervals) {
+            sort(array, interval.getStart(), interval.getEnd());
         }
-
-        // Loop Through every list of tasks
-        for(List<Callable<Void>> l : tasks){
-            try {
-                // Execute list of tasks and wait for all tasks to be completed
-                executor.invokeAll(l);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        executor.shutdown();
-        while(!executor.isTerminated()){};
     }
 
     /**
@@ -69,18 +30,17 @@ public class MergeSort {
         frontier.add(new Interval(start, end));
 
         int i = 0;
-        while(i < frontier.size()){
+        while (i < frontier.size()) {
             int s = frontier.get(i).getStart();
             int e = frontier.get(i).getEnd();
 
+            // Increment i
             i++;
 
-            // if base case
-            if(s == e){
-                continue;
-            }
+            // If base case
+            if(s == e) continue;
 
-            // compute midpoint
+            // Compute midpoint
             int m = s + (e - s) / 2;
 
             // add prerequisite intervals
@@ -88,14 +48,13 @@ public class MergeSort {
             frontier.add(new Interval(s, m));
         }
 
-        // Sort each interval by the difference of the End and Start indexes
-        Collections.sort(frontier, new Comparator<Interval>(){ 
-            @Override
-            public int compare(Interval o1, Interval o2) {
-                return Integer.compare(o1.getDiff(), o2.getDiff());
-        }});
+        List<Interval> retval = new ArrayList<>();
 
-        return frontier;
+        for (i = frontier.size() - 1; i >= 0; i--) {
+            retval.add(frontier.get(i));
+        }
+
+        return retval;
     }
 
     /**
@@ -109,7 +68,7 @@ public class MergeSort {
         int[] left = new int[m - s + 1];
         int[] right = new int[e - m];
         int l_ptr = 0, r_ptr = 0;
-        for(int i = s; i <= e; i++) {
+        for (int i = s; i <= e; i++) {
             if(i <= m) {
                 left[l_ptr++] = array[i];
             } else {
@@ -118,14 +77,14 @@ public class MergeSort {
         }
         l_ptr = r_ptr = 0;
 
-        for(int i = s; i <= e; i++) {
+        for (int i = s; i <= e; i++) {
             // no more elements on left half
-            if(l_ptr == m - s + 1) {
+            if (l_ptr == m - s + 1) {
                 array[i] = right[r_ptr];
                 r_ptr++;
 
             // no more elements on right half or left element comes first
-            } else if(r_ptr == e - m || left[l_ptr] <= right[r_ptr]) {
+            } else if (r_ptr == e - m || left[l_ptr] <= right[r_ptr]) {
                 array[i] = left[l_ptr];
                 l_ptr++;
             } else {

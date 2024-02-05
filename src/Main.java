@@ -2,11 +2,14 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
+import models.BetterMergeSort;
 import models.MergeSort;
 
 public class Main {
     // Seed for the Randomizer
     private static final long SEED = 18;
+
+    private static final int SIZE = 8388608;
 
     /**
      * The main function for getting an input from the user
@@ -37,13 +40,27 @@ public class Main {
         }
     }
 
+    public static boolean isSorted(int[] arr){
+        int temp = arr[0];
+        for (int i = 1; i < arr.length; i++){
+            if(arr[i] < temp){
+                System.out.println("\nVAL 1: " + arr[i] + " VAL 2: " + temp);
+                System.out.println("Found at Index: " + i + " and Index: " + (i-1)); 
+                return false;
+            }
+            temp = arr[i];
+        }
+        return true;
+    }
+
     public static void main(String[] args) {
         // Get array size and thread count from user
         Scanner sc = new Scanner(System.in);
 
-        int nSize =  getUserInput(sc, "Enter size of array: ");
+        // int nSize =  getUserInput(sc, "Enter size of array: ");
+        int nSize = SIZE;
 
-        int nThreads = getUserInput(sc, "Enter number of threads: ");
+        // int nThreads = getUserInput(sc, "Enter number of THREADS: ");
 
         // Close the Scanner
         sc.close();
@@ -57,34 +74,48 @@ public class Main {
         // Display Before Array
         // System.out.println("\nBEFORE: " + Arrays.toString(randomArray));
 
-        // Start Timer
-        long startTime = System.nanoTime();
-        
-        // Call MergeSort
-        MergeSort.merge(randomArray, 0, randomArray.length - 1, nThreads);
-        
-        // End Timer
-        long endTime = System.nanoTime();
+        int[] threads = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
+        float ave = 0;
+        long startTime, endTime;
 
-        // Check if Array is Sorted
-        System.out.println("\nSORTED: " + isSorted(randomArray));
-
-        // Display Time and Results
-        System.out.printf("\nTotal Runtime: %d milliseconds.\n", (long) TimeUnit.NANOSECONDS.toMillis(endTime - startTime));
-
-        return;
-    }
-
-    public static boolean isSorted(int[] arr){
-        int temp = arr[0];
-        for (int i = 1; i < arr.length; i++){
-            if(arr[i] < temp){
-                System.out.println("\nVAL 1: " + arr[i] + " VAL 2: " + temp); 
-                System.out.println("Found at Index: " + i + " and Index: " + (i-1)); 
-                return false;
+        // Run MergeSort
+        for (int thread : threads) {
+            // Caching (Run 3 times)
+            for (int i = 0; i < 3; i++) {
+                BetterMergeSort.merge(randomArray.clone(), thread);
             }
-            temp = arr[i];
+
+            // Run 5 times
+            for (int i = 0; i < 5; i++) {
+                int[] copy = randomArray.clone();
+
+                // Start Timer
+                startTime = System.nanoTime();
+                
+                // Call MergeSort
+                BetterMergeSort.merge(copy, thread);
+                
+                // End Timer
+                endTime = System.nanoTime();
+
+                ave += (long) TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
+
+                // Check if sorted
+                System.out.println("Iteration: " + i + ", Sorted: " + isSorted(copy));
+            }
+            ave /= 5;
+
+            // Display Thread Count
+            System.out.println("Thread Count: " + thread);
+
+            // Display Time and Results
+            System.out.printf("Average Runtime: %.4f milliseconds.\n\n", ave);
+
+            // Set Average to 0 again
+            ave = 0;
+
+            // Garbage Collection
+            System.gc();
         }
-        return true;
     }
 }
