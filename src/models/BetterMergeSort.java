@@ -18,7 +18,8 @@ public class BetterMergeSort {
 
         // Shutdown the pool
         pool.shutdown();
-        pool.close();
+        
+        // pool.close(); // Deprecated
     }
 
     /**

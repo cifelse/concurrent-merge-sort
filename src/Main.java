@@ -60,7 +60,7 @@ public class Main {
         // int nSize =  getUserInput(sc, "Enter size of array: ");
         int nSize = SIZE;
 
-        int nThreads = getUserInput(sc, "Enter number of THREADS: ");
+        // int nThreads = getUserInput(sc, "Enter number of THREADS: ");
 
         // Close the Scanner
         sc.close();
@@ -74,29 +74,26 @@ public class Main {
         // Display Before Array
         // System.out.println("\nBEFORE: " + Arrays.toString(randomArray));
 
-
-
-        int[] threads = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
+        int[] threads = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
         float ave = 0;
         long startTime, endTime;
 
-
-        for (int thread : threads){
-
+        // Run MergeSort
+        for (int thread : threads) {
             // Caching (Run 3 times)
             for (int i = 0; i < 3; i++) {
-                MergeSort.merge(randomArray.clone(), thread);
+                BetterMergeSort.merge(randomArray.clone(), thread);
             }
 
             // Run 5 times
-            for (int i = 0; i < 5; i++){
+            for (int i = 0; i < 5; i++) {
                 int[] copy = randomArray.clone();
 
                 // Start Timer
                 startTime = System.nanoTime();
                 
                 // Call MergeSort
-                MergeSort.merge(copy, thread);
+                BetterMergeSort.merge(copy, thread);
                 
                 // End Timer
                 endTime = System.nanoTime();
@@ -108,17 +105,17 @@ public class Main {
             }
             ave /= 5;
 
-            // Display thread count
+            // Display Thread Count
             System.out.println("Thread Count: " + thread);
 
             // Display Time and Results
             System.out.printf("Average Runtime: %.4f milliseconds.\n\n", ave);
 
+            // Set Average to 0 again
             ave = 0;
+
+            // Garbage Collection
             System.gc();
         }
-        
-
     }
-
 }
