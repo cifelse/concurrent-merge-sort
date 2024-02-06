@@ -3,7 +3,6 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import models.BetterMergeSort;
-import models.MergeSort;
 
 public class Main {
     // Seed for the Randomizer
@@ -28,7 +27,7 @@ public class Main {
      * @param seed {long} - Randomizer seed
      */
     public static void shuffle(int[] array, long seed) {
-        Random random = new Random(SEED);
+        Random random = new Random(seed);
 
         for (int i = array.length - 1; i > 0; i--) {
             int index = random.nextInt(i + 1);
